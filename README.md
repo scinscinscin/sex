@@ -51,6 +51,8 @@ Speed is not the goal but it's pretty lit
 
 **With express**
 
+Executed using `node expressApp.js`
+
 ```
 ./wrk -c100 -d30 -t4 http://localhost:8000/cats
 Running 30s test @ http://localhost:8000/cats
@@ -65,16 +67,18 @@ Transfer/sec:      1.24MB
 
 **With sex**
 
+Executed using `node test/index.js`
+
 ```
 ./wrk -c100 -d30 -t4 http://localhost:8000/cats
 Running 30s test @ http://localhost:8000/cats
   4 threads and 100 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     7.25ms   19.75ms 557.25ms   99.16%
-    Req/Sec     4.34k   518.38     6.01k    82.94%
-  516340 requests in 30.02s, 74.85MB read
-Requests/sec:  17200.34
-Transfer/sec:      2.49MB
+    Latency     7.24ms   18.58ms 520.36ms   99.27%
+    Req/Sec     4.24k   491.61     7.07k    81.79%
+  504865 requests in 30.03s, 73.18MB read
+Requests/sec:  16812.21
+Transfer/sec:      2.44MB
 ```
 
-Sex is 3.15x faster than express.
+Sex is 3.08x faster than express.

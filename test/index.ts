@@ -8,7 +8,8 @@ const router = createRouter({
       if (body && typeof body["username"] === "string") {
         res.cookies.set("user", body["username"]);
         console.log(body);
-        return res.raw.write(JSON.stringify({ success: true }));
+        res.raw.write(JSON.stringify({ success: true }));
+        return;
       }
 
       res.raw.write(JSON.stringify({ success: false }));

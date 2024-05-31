@@ -1,5 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "http";
-import { Endpoint, Router } from "./router";
+import { Endpoint, HTTPMethods, Router } from "./router";
 import { parseURL } from "./parser/path";
 import { compileRouteTree, matchPathToEndpoint } from "./engine";
 import { Context, Cookies, Request, Response } from "./types";
@@ -21,7 +21,7 @@ export const sex = function (router: Router, opts?: SexOptions) {
       response.end();
     });
 
-  const server = http.createServer(async (req, res) => {
+  const server = http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
     // should never run?
     if (typeof req.url !== "string") return res.end();
 
@@ -33,10 +33,12 @@ export const sex = function (router: Router, opts?: SexOptions) {
       req: createRequest(req, query, endpoint?.variables ?? {}),
     };
 
-    if (endpoint && req.method && req.method in endpoint.value) await endpoint.value[req.method](context);
+    if (endpoint && req.method && req.method in endpoint.value)
+      await endpoint.value[req.method as HTTPMethods]!(context);
     else notFoundHandler(context);
 
     res.end();
+    return;
   });
 
   return {

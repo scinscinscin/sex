@@ -1,8 +1,9 @@
 import { RawRoutingEngine } from "./engine";
 import { Context } from "./types";
 
-type HTTPMethods = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
-export type Endpoint = (ctx: Context) => void;
+type PromiseOrNot<T> = Promise<T> | T;
+export type HTTPMethods = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
+export type Endpoint = (ctx: Context) => PromiseOrNot<void>;
 
 type Group = {
   [key in HTTPMethods]?: Endpoint;

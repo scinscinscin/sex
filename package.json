@@ -4,7 +4,9 @@
   "description": "A lightweight and fast replacement for express",
   "main": "index.js",
   "scripts": {
-    "test": "tsx watch test/index.ts"
+    "test": "tsx watch test/index.ts",
+    "tc": "tsc --noEmit",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
