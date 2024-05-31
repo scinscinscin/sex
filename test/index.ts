@@ -3,6 +3,8 @@ import { createRouter, sex } from "../src";
 const router = createRouter({
   "/login": {
     POST: async ({ req, res }) => {
+      console.log(req.cookies);
+
       const body = await req.body.json();
 
       if (body && typeof body["username"] === "string") {

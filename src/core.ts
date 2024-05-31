@@ -5,6 +5,7 @@ import { compileRouteTree, matchPathToEndpoint } from "./engine";
 import { Context, Cookies, Request, Response } from "./types";
 import { Query } from "./parser/query";
 import { bodyParser } from "./parser/body";
+import { parseCookieHeader } from "./parser/cookie";
 
 interface SexOptions {
   notFound?: Endpoint;
@@ -55,7 +56,7 @@ function createRequest(raw: IncomingMessage, query: Query, path: { [key: string]
     return JSON.parse(body.toString());
   }
 
-  return { raw, query, path, body: { json } };
+  return { raw, query, path, cookies: parseCookieHeader(raw.headers.cookie ?? ""), body: { json } };
 }
 
 const setCookieHeader = (response: ServerResponse, cookies: Cookies): string[] => {

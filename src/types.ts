@@ -16,6 +16,7 @@ type JSON = JSON[] | JSONLiteral | { [key: string]: JSON };
 export interface Request {
   raw: IncomingMessage;
   query: Query;
+  cookies: { [key: string]: string };
   path: { [key: string]: string };
   body: { json(): Promise<JSON> };
 }

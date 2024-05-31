@@ -5,7 +5,7 @@ A lightweight and faster alternative to express?
 ### TODO
  - [x] Finish routing and add support for methods
  - [x] Add json body-parser
- - [ ] Add cookie-parser
+ - [x] Add cookie-parser
  - [ ] Add multipart-form parser
  - [ ] Add csrf
  - [ ] Add middleware
