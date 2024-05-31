@@ -1,14 +1,30 @@
 import { RawRoutingEngine } from "./engine";
 import { Context } from "./types";
 
+type HTTPMethods = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 export type Endpoint = (ctx: Context) => void;
 
-type RouterConfig = RawRoutingEngine<Endpoint>;
+type Group = {
+  [key in HTTPMethods]?: Endpoint;
+};
 
 export interface Router {
-  config: RouterConfig;
+  config: RawRoutingEngine<Group & { __endpoint: true }>;
 }
 
-export const createRouter = (config: RouterConfig): Router => {
-  return { config };
+export interface Config {
+  [key: string]: Router | Group;
+}
+
+const isRouter = (obj: any): obj is Router => "config" in obj;
+
+export const createRouter = (config: Config): Router => {
+  const bruh: Router["config"] = {};
+
+  for (const [key, value] of Object.entries(config)) {
+    if (isRouter(value)) bruh[key] = value.config;
+    else bruh[key] = { ...value, __endpoint: true };
+  }
+
+  return { config: bruh };
 };

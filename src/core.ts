@@ -35,7 +35,7 @@ export const sex = function (router: Router, opts?: SexOptions) {
       },
     };
 
-    if (endpoint) return endpoint.value(context);
+    if (endpoint && req.method && req.method in endpoint.value) return endpoint.value[req.method](context);
     else notFoundHandler(context);
 
     if (!res.closed) res.end();

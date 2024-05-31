@@ -13,27 +13,29 @@ export const removeWrappingSlashes = (str: string) => {
 /**
  * A human friendly interface representing routes
  */
-export interface RawRoutingEngine<T extends Function> {
+export interface RawRoutingEngine<T extends { __endpoint: true }> {
   [key: string]: RawRoutingEngine<T> | T;
 }
 
-export type CompiledRoutingEngine<T extends Function> = [string[], CompiledRoutingEngine<T> | T][];
+export type CompiledRoutingEngine<T extends { __endpoint: true }> = [string[], CompiledRoutingEngine<T> | T][];
+
+const isGroup = <T>(subroute: any): subroute is T => "__endpoint" in subroute && subroute.__endpoint === true;
 
 /**
  * Compiles a RawRoutingEngine object into CompiledRoutingEngine
  */
-export const compileRouteTree = <T extends Function>(h: RawRoutingEngine<T>): CompiledRoutingEngine<T> => {
+export const compileRouteTree = <T extends { __endpoint: true }>(h: RawRoutingEngine<T>): CompiledRoutingEngine<T> => {
   return Object.entries(h).map(([path, subroute]) => {
     const pathSegments = removeWrappingSlashes(path).split("/");
-    const val = typeof subroute === "function" ? subroute : compileRouteTree(subroute);
+    const val = isGroup<T>(subroute) ? subroute : compileRouteTree(subroute as RawRoutingEngine<T>);
     return [pathSegments, val];
   });
 };
 
-const getIndexHandler = <T extends Function>(c: CompiledRoutingEngine<T>): T | null => {
+const getIndexHandler = <T extends { __endpoint: true }>(c: CompiledRoutingEngine<T>): T | null => {
   const indexSubrouter = c.find((sr) => sr[0][0] === "");
   if (!indexSubrouter) return null;
-  if (typeof indexSubrouter[1] === "function") return indexSubrouter[1];
+  if (isGroup<T>(indexSubrouter[1])) return indexSubrouter[1];
   else return getIndexHandler(indexSubrouter[1]);
 };
 
@@ -44,7 +46,7 @@ type Matched<T> = { variables: { [key: string]: string }; value: T };
  * @param heirarchy - a compiled routing heirarchy
  * @param segments - path segments
  **/
-export const matchPathToEndpoint = function <T extends Function>(
+export const matchPathToEndpoint = function <T extends { __endpoint: true }>(
   heirarchy: CompiledRoutingEngine<T>,
   segments: string[]
 ): Matched<T> | null {
@@ -74,7 +76,7 @@ export const matchPathToEndpoint = function <T extends Function>(
 
     // is a direct match
     if (path.length === segments.length) {
-      if (typeof subrouter !== "object") return { variables, value: subrouter };
+      if (isGroup<T>(subrouter)) return { variables, value: subrouter };
       const indexHandler = getIndexHandler(subrouter);
       if (indexHandler) return { variables, value: indexHandler };
     }
@@ -83,7 +85,7 @@ export const matchPathToEndpoint = function <T extends Function>(
     else if (path.length < segments.length) {
       // get parts of segment not matched by current router
       const remainingSegments = segments.slice(path.length, segments.length);
-      if (typeof subrouter !== "function") {
+      if (!isGroup<T>(subrouter)) {
         const fn = matchPathToEndpoint(subrouter, remainingSegments);
         if (fn != null) {
           const { value: handler, variables: subrouterVars } = fn;

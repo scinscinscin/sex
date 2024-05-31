@@ -4,9 +4,42 @@ A lightweight and faster alternative to express?
 
 ### TODO
  - [ ] Finish routing and add support for methods
- - [ ] Add body-parser, cookie-parser, multi-part form parser
+ - [ ] Add cookie-parser
+ - [ ] Add body-parser
+ - [ ] Add multipart-form parser
+ - [ ] Add csrf
  - [ ] Add middleware
  - [ ] Add error handling
+
+### Example
+```ts
+import { createRouter, sex } from "@scinorandex/sex";
+
+const dogsRouter = createRouter({
+  "/": {
+    GET: ({ req, res }) => {
+      res.raw.write("I love dogs");
+      res.raw.end();
+    },
+  },
+});
+
+const router = createRouter({
+  "/cats": {
+    GET: ({ req, res }) => {
+      res.raw.write("I love cats");
+      res.raw.end();
+    },
+  },
+
+  "/dogs": dogsRouter,
+});
+
+const app = sex(router);
+app.listen(8000, () => {
+  console.log("Server started on port 8000");
+});
+```
 
 ### Benchmark
 
